@@ -12,10 +12,11 @@
 #-------------------------------------------------------------------------#
 import subprocess,sys,os
 def smart_disk_checks():
-        disks=os.system("lsscsi|grep disk| awk -F ' ' '{print $6}'")
-#       print disks
+        disks=subprocess.Popen("lsscsi| grep disk| cut -d ' ' -f28", shell=True, stdout=subprocess.PIPE).stdout.read()
+        print disks
         disks_list=str(disks)
-        print disks_list[0]
+        lenth=len(disks_list)
+        print lenth
 
 def main():
         smart_disk_checks()
