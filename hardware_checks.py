@@ -11,15 +11,30 @@
 # Run ONLY as root user
 #-------------------------------------------------------------------------#
 import subprocess,sys,os
-def smart_disk_checks():
-        disks=subprocess.Popen("lsscsi| grep disk| cut -d ' ' -f28", shell=True, stdout=subprocess.PIPE).stdout.read()
-        print disks
-        disks_list=str(disks)
-        lenth=len(disks_list)
-        print lenth
-
+def smart_disk_checks(f):
+#       disks=subprocess.Popen("lsscsi| grep disk| cut -d '/' -f3", shell=True, stdout=subprocess.PIPE).stdout.read()
+#       print str(disks)
+#       print len(disks)
+        disks=subprocess.Popen("ls /dev/sd*", shell=True, stdout=subprocess.PIPE).stdout.read()
+        print str(disks)
+#       print(list(disks))
+        L = disks.split('\n')
+        print L
+        num_disks=len(L) - 1
+        for x in range(num_disks): 
+                print L[x] 
+                disk = str(L[x])
+                args= "smartctl -a " + disk
+                f.write(args)
+                subprocess.call(args, shell=True)
+                partitions = "fdisk -l " + disk
+                print partitions
+                subprocess.call(partitions, shell=True)
+        f.close()
 def main():
-        smart_disk_checks()
+        print("Offline Node Health Checks Summary\n################################################################################\nSUMMARY\n################################################################################")
+        f=open("offline_node_health_check_summary","w+")
+        smart_disk_checks(f)
 
 if __name__ == "__main__":
         main()
